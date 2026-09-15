@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      html,body{
+        background: #000;
+        font-family: monospace;
+        color: #fff;
+        overflow: hidden;
+      }
+      #header{
+        height: 40px;
+        background: linear-gradient(90deg,#204,#048,#402);
+        text-align: center;
+        font-size: 34px;
+        text-shadow: #fff 0px 0px 5px;
+      }
+      #headerText{
+        transform: scaleX(2.0);
+        display: inline-block;
+      }
+      input[type=text]:focus{
+        outline: none;
+      }
+      input[type=text]{
+        border-radius: 5px;
+        font-size: 32px;
+        width: 500px;
+        border: 1px solid #4f84;
+        background: #000;
+        padding-left: 20px;
+        padding-right: 20px;
+        color: #fa1;
+      }
+      .inputContainer{
+        width: 550px;
+        color: #488;
+        left: 50%;
+        position: absolute;
+        top: calc(50% - 50px);
+        transform: translate(-50%, -50%);
+        font-size: 24px;
+        text-align: left;
+      }
+      .main{
+        text-align: center;
+        background: #112;
+        height: calc(100vh - 40px);
+      }
+      #outputContainer{
+        padding: 20px;
+        display: none;
+        width: 550px;
+        color: #488;
+        left: 50%;
+        box-sizing: border-box;
+        border: 1px solid red;
+        position: absolute;
+        top: calc(50% + 80px);
+        transform: translate(-50%, -50%);
+        font-size: 24px;
+        text-align: left;
+        white-space: pre;
+        pre:
+        border-radius: 5px;
+        background: #000;
+        border: 1px solid #ff03;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header">
+      <span id="headerText">find x</span>
+    </div>
+    <div class="main">
+      <div class="inputContainer">
+        enter an equation with x<br>
+        <input
+          autofocus
+          id="inputField"
+          oninput="process()"
+          type="text"
+          placeholder="example: x * 2 = 3"
+        >
+      </div>
+    </div>
+    <div id="outputContainer"></div>
+    <script>
+      var inputVal = document.querySelector('#inputField')
+      var outputContainer = document.querySelector('#outputContainer')
+      const process = () => {
+        eq = inputVal.value
+        var ans =  FindX(eq)
+        if(ans){
+          outputContainer.innerHTML = ans
+          outputContainer.style.display = 'inline-block'
+        }else{
+          outputContainer.style.display = 'none'
+        }
+      }
+      const FindX = eq => {
+        var eqs = eq.split('=')
+        if(eqs.length<2) return false
+        var noSol
+        var tgt = eqs[1]
+        var e = eqs[0]
+        var x = 0
+        var init = eval(e)
+        var dg = 1e20, ct = 0
+        do{
+          var ct2 = 0
+          do{
+            var out = eval(e)
+            var a = out - tgt
+            if(Math.abs(a) > dg){
+              x += a > 0 ? -dg : dg
+            }
+            ct2++
+          }while(Math.abs(a)>dg&&ct2<200)
+          //if(ct)dg=.1
+          dg/=10
+          ct++
+        }while(dg>.00000000001&&ct<500)
+        console.log(ans)
+        if(ct==500 || isNaN(out)){
+          console.log(`eq: ${eq}\nno solution`)
+          noSol = true
+        }else{
+          var ans = Math.round(x*1e9)/1e9
+          var exact = Math.round(out*1e9)/1e9 == tgt ? '' : '~'
+          noSol = false
+        }
+        //return ans
+        if(noSol || typeof ans == 'undefined'){
+          return `<span style="">  equation: ${eq}</span>
+<span style="color: #ff0;">    answer: no solution</span>`
+        }else{
+          return `<span style="">  equation: ${eq}</span>
+<span style="color: #ff08;">reciprocal: x = ${exact}${Math.round((1/ans)*1e6)/1e6}</span>
+<span style="color: #ff0;">    answer: x = ${exact}${ans}</span>
+`
+        }
+      }
+    </script>
+  </body>
+</html>
