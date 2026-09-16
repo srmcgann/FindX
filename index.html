@@ -81,7 +81,7 @@
           id="inputField"
           oninput="process()"
           type="text"
-          placeholder="example: x * 2 = 3"
+          placeholder="example  x*2=3"
         >
       </div>
     </div>
@@ -102,8 +102,8 @@
       const FindX = eq => {
         var eqs = eq.split('=')
         if(eqs.length<2) return false
-        var noSol
-        var tgt = eqs[1]
+        var noSol=false
+        var tgt = eval(eqs[1])
         var e = eqs[0]
         var x = 0
         var init = eval(e)
@@ -117,19 +117,18 @@
               x += a > 0 ? -dg : dg
             }
             ct2++
-          }while(Math.abs(a)>dg&&ct2<200)
-          //if(ct)dg=.1
+          }while(Math.abs(a)>dg&&ct2<500)
           dg/=10
           ct++
         }while(dg>.00000000001&&ct<500)
-        console.log(ans)
-        if(ct==500 || isNaN(out)){
+        var domainError = false
+        if((Math.round(x*1e9)/1e9+'').replaceAll('.','').indexOf('555555555')!=-1) domainError=true
+        if(ct==500 || isNaN(out) || domainError){
           console.log(`eq: ${eq}\nno solution`)
           noSol = true
         }else{
           var ans = Math.round(x*1e9)/1e9
           var exact = Math.round(out*1e9)/1e9 == tgt ? '' : '~'
-          noSol = false
         }
         //return ans
         if(noSol || typeof ans == 'undefined'){
