@@ -94,7 +94,7 @@
         eq = inputVal.value
         if(origin != 'null'){
           if(eq){
-            history.replaceState('','','`/?eq=${eq}`')
+            history.replaceState('','',`/?eq=${eq}`)
           }else{
             history.replaceState('','','')
           }
