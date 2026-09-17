@@ -131,7 +131,6 @@
           var domainError = false
           if((Math.round(x*1e9)/1e9+'').replaceAll('.','').indexOf('555555555')!=-1) domainError=true
           if(ct==500 || isNaN(out) || domainError){
-            console.log(`eq: ${eq}\nno solution`)
             noSol = true
           }else{
             var ans = Math.round(x*1e9)/1e9
@@ -144,16 +143,16 @@
           }else{
             return `<span style="">  equation: ${eq}</span>
 <span style="color: #ff08;">reciprocal: x = ${exact}${Math.round((1/ans)*1e6)/1e6}</span>
-<span style="color: #ff0;">    answer: x = ${exact}${ans}</span>
+<span style="color: #ff0;">    answer: x = ${exact}${ans} </span>
 `
           }
         }
         eq = eq.replaceAll('X','x')
         var eqs = eq.split('=')
         if(eqs.length<2) return false
-        var test1 = slv(eqs[1], eqs[0])
-        var test2 = slv(eqs[0], eqs[1])
-        return test1.indexOf('answer: x = ~0') == -1 ? test1 : test2
+        var test = slv(eqs[1], eqs[0])
+        if( test.indexOf('answer: x = ~0 ') == -1) return test
+        return slv(eqs[0], eqs[1])
       }
       var l
       if((l=location.href.split('eq=')).length>1){
