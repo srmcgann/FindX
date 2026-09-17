@@ -89,6 +89,7 @@
     <script>
       var inputVal = document.querySelector('#inputField')
       var outputContainer = document.querySelector('#outputContainer')
+      
       const process = () => {
         eq = inputVal.value
         var ans =  FindX(eq)
@@ -141,6 +142,11 @@
 <span style="color: #ff0;">    answer: x = ${exact}${ans}</span>
 `
         }
+      }
+      var l
+      if((l=location.href.split('eq=')).length>1){
+        inputVal.value = decodeURIComponent(l[1])
+        process()
       }
     </script>
   </body>
