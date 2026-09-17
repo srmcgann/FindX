@@ -108,47 +108,52 @@
         }
       }
       const FindX = eq => {
-        eq = eq.replaceAll('X','x')
-        var eqs = eq.split('=')
-        if(eqs.length<2) return false
-        var noSol=false
-        var tgt = eval(eqs[1])
-        var e = eqs[0]
-        var x = 0
-        var init = eval(e)
-        var dg = 1e20, ct = 0
-        do{
-          var ct2 = 0
+        const slv = (terma, termb) => {
+          var noSol=false
+          var tgt = eval(terma)
+          var e = termb
+          var init = eval(e)
+          var x = 0
+          var dg = 1e20, ct = 0
           do{
-            var out = eval(e)
-            var a = out - tgt
-            if(Math.abs(a) > dg){
-              x += a > 0 ? -dg : dg
-            }
-            ct2++
-          }while(Math.abs(a)>dg&&ct2<500)
-          dg/=10
-          ct++
-        }while(dg>.00000000001&&ct<500)
-        var domainError = false
-        if((Math.round(x*1e9)/1e9+'').replaceAll('.','').indexOf('555555555')!=-1) domainError=true
-        if(ct==500 || isNaN(out) || domainError){
-          console.log(`eq: ${eq}\nno solution`)
-          noSol = true
-        }else{
-          var ans = Math.round(x*1e9)/1e9
-          var exact = Math.round(out*1e9)/1e9 == tgt ? '' : '~'
-        }
-        //return ans
-        if(noSol || typeof ans == 'undefined'){
-          return `<span style="">  equation: ${eq}</span>
+            var ct2 = 0
+            do{
+              var out = eval(e)
+              var a = out - tgt
+              if(Math.abs(a) > dg){
+                x += a > 0 ? -dg : dg
+              }
+              ct2++
+            }while(Math.abs(a)>dg&&ct2<500)
+            dg/=10
+            ct++
+          }while(dg>.00000000001&&ct<500)
+          var domainError = false
+          if((Math.round(x*1e9)/1e9+'').replaceAll('.','').indexOf('555555555')!=-1) domainError=true
+          if(ct==500 || isNaN(out) || domainError){
+            console.log(`eq: ${eq}\nno solution`)
+            noSol = true
+          }else{
+            var ans = Math.round(x*1e9)/1e9
+            var exact = Math.round(out*1e9)/1e9 == tgt ? '' : '~'
+          }
+          //return ans
+          if(noSol || typeof ans == 'undefined'){
+            return `<span style="">  equation: ${eq}</span>
 <span style="color: #ff0;">    answer: no solution</span>`
-        }else{
-          return `<span style="">  equation: ${eq}</span>
+          }else{
+            return `<span style="">  equation: ${eq}</span>
 <span style="color: #ff08;">reciprocal: x = ${exact}${Math.round((1/ans)*1e6)/1e6}</span>
 <span style="color: #ff0;">    answer: x = ${exact}${ans}</span>
 `
+          }
         }
+        eq = eq.replaceAll('X','x')
+        var eqs = eq.split('=')
+        if(eqs.length<2) return false
+        var test1 = slv(eqs[1], eqs[0])
+        var test2 = slv(eqs[0], eqs[1])
+        return test1.indexOf('answer: x = ~0') == -1 ? test1 : test2
       }
       var l
       if((l=location.href.split('eq=')).length>1){
