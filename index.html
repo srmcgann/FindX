@@ -163,25 +163,21 @@
         test = slv(eqs[0], eqs[1], 0)
         if(test.indexOf('answer: no solution') == -1 &&
            test.indexOf('answer: x = ~0 ') == -1) {
-          console.log(1)
           return test
         }else{
           test = slv(eqs[1], eqs[0], 0)
           if(test.indexOf('answer: no solution') == -1 &&
              test.indexOf('answer: x = ~0 ') == -1){
-            console.log(2)
             return test
           }else{
             test = slv(eqs[0], eqs[1], 1)
             if(test.indexOf('answer: no solution') == -1 &&
                test.indexOf('answer: x = ~0 ') == -1) {
-              console.log(3)
               return test
             }else{
               test = slv(eqs[1], eqs[0], 1)
               if(test.indexOf('answer: no solution') == -1 &&
                  test.indexOf('answer: x = ~0 ') == -1){
-                console.log(4)
                 return test
               }
             }
