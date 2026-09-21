@@ -108,7 +108,7 @@
         }
       }
       const FindX = eq => {
-        const slv = (terma, termb) => {
+        const slv = (terma, termb, mode) => {
           var noSol=false
           var tgt = eval(terma)
           var e = termb
@@ -120,8 +120,17 @@
             do{
               var out = eval(e)
               var a = out - tgt
-              if(Math.abs(a) > dg){
-                x += a > 0 ? -dg : dg
+              switch(mode){
+                case 0:
+                  if(Math.abs(a) > dg){
+                    x += a > 0 ? -dg : dg
+                  }
+                break
+                case 1:
+                  if(Math.abs(a) > dg){
+                    x += x + dg < x ? -dg : dg
+                  }
+                break
               }
               ct2++
             }while(Math.abs(a)>dg&&ct2<500)
@@ -150,9 +159,34 @@
         eq = eq.replaceAll('X','x')
         var eqs = eq.split('=')
         if(eqs.length<2) return false
-        var test = slv(eqs[1], eqs[0])
-        if( test.indexOf('answer: x = ~0 ') == -1) return test
-        return slv(eqs[0], eqs[1])
+        var test
+        test = slv(eqs[0], eqs[1], 0)
+        if(test.indexOf('answer: no solution') == -1 &&
+           test.indexOf('answer: x = ~0 ') == -1) {
+          console.log(1)
+          return test
+        }else{
+          test = slv(eqs[1], eqs[0], 0)
+          if(test.indexOf('answer: no solution') == -1 &&
+             test.indexOf('answer: x = ~0 ') == -1){
+            console.log(2)
+            return test
+          }else{
+            test = slv(eqs[0], eqs[1], 1)
+            if(test.indexOf('answer: no solution') == -1 &&
+               test.indexOf('answer: x = ~0 ') == -1) {
+              console.log(3)
+              return test
+            }else{
+              test = slv(eqs[1], eqs[0], 1)
+              if(test.indexOf('answer: no solution') == -1 &&
+                 test.indexOf('answer: x = ~0 ') == -1){
+                console.log(4)
+                return test
+              }
+            }
+          }
+        }
       }
       var l
       if((l=location.href.split('eq=')).length>1){
