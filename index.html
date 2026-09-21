@@ -160,24 +160,23 @@
         var eqs = eq.split('=')
         if(eqs.length<2) return false
         var test
-        test = slv(eqs[0], eqs[1], 0)
-        if(test.indexOf('answer: no solution') == -1 &&
-           test.indexOf('answer: x = ~0 ') == -1) {
+        
+        const Validate = test => {
+          return test.indexOf('answer: no solution') == -1 &&
+           (test.indexOf('answer: x = ~') == -1 ||
+            test.split("\n")[2].length > 56)
+        }
+        
+        if(Validate(test=slv(eqs[0], eqs[1], 0))) {
           return test
         }else{
-          test = slv(eqs[1], eqs[0], 0)
-          if(test.indexOf('answer: no solution') == -1 &&
-             test.indexOf('answer: x = ~0 ') == -1){
+          if(Validate(test=slv(eqs[1], eqs[0], 0))){
             return test
           }else{
-            test = slv(eqs[0], eqs[1], 1)
-            if(test.indexOf('answer: no solution') == -1 &&
-               test.indexOf('answer: x = ~0 ') == -1) {
+            if(Validate(test=slv(eqs[0], eqs[1], 1))) {
               return test
             }else{
-              test = slv(eqs[1], eqs[0], 1)
-              if(test.indexOf('answer: no solution') == -1 &&
-                 test.indexOf('answer: x = ~0 ') == -1){
+              if(test=slv(eqs[1],eqs[0], 1)){
                 return test
               }
             }
