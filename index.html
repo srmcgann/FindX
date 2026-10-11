@@ -114,7 +114,7 @@
           var e = termb
           var init = eval(e)
           var x = 0.000000000001
-          var dg = 1e20, ct = 0
+          var dg = 1e99, ct = 0
           do{
             var ct2 = 0
             do{
@@ -133,8 +133,8 @@
                 break
               }
               ct2++
-            }while(Math.abs(a)>dg&&ct2<500)
-            dg/=10
+            }while(Math.abs(a)>dg&&ct2<2e3)
+            dg/=5
             ct++
           }while(dg>.00000000001&&ct<500)
           var domainError = false
@@ -142,8 +142,8 @@
           if(ct==500 || isNaN(out) || domainError){
             noSol = true
           }else{
-            var ans = Math.round(x*1e9)/1e9
-            var exact = Math.round(out*1e9)/1e9 == tgt ? '' : '~'
+            var ans = Math.round(x*1e7)/1e7
+            var exact = Math.round(out*1e7)/1e7 == tgt ? '' : '~'
           }
           //return ans
           if(noSol || typeof ans == 'undefined'){
