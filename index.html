@@ -99,90 +99,88 @@
             history.replaceState('','','')
           }
         }
-        var ans =  FindX(eq)
-        if(ans){
-          outputContainer.innerHTML = ans
+        var ans
+        if((ans = FindX(eq, false)).result == 'nosol'){
+          // swapping
+          ans = FindX(eq, true)
+        }
+        if(ans.result == 'solved'){
+          outputContainer.innerHTML = ans.ans
           outputContainer.style.display = 'inline-block'
         }else{
           outputContainer.style.display = 'none'
         }
       }
-      const FindX = eq => {
-        const slv = (terma, termb, mode) => {
-          var noSol=false
-          var tgt = eval(terma)
-          var e = termb
-          var init = eval(e)
-          var x = 0.000000000001
-          var dg = 1e99, ct = 0
+      
+      const FindX = (eq, swap=false) => {
+        eq = eq.replaceAll('X', 'x')
+        var parts = eq.split('=')
+        var ans
+        if(parts.length == 2 && parts[0].length && parts[1].length){
+          if(swap){
+            var tmp = parts[0]
+            parts[0] = parts[1]
+            parts[1] = tmp
+          }
+          const E = x => {
+            var left = eval(parts[0].replaceAll('x', x))
+            var right = eval(parts[1].replaceAll('x', x))
+            return { ans: Math.round(eval(x)*1e8)/1e8,
+                    diff: left - right}
+          }
+          var tx = 0 , ct = 0, a = {ans: '', diff: ''}
+          var solved, ov=0, b = 1e20, ct2 = 0
+          var ls1 = false, ls2 = true
           do{
-            var ct2 = 0
-            do{
-              var out = eval(e)
-              var a = out - tgt
-              switch(mode){
-                case 0:
-                  if(Math.abs(a) > dg){
-                    x += a > 0 ? -dg : dg
-                  }
-                break
-                case 1:
-                  if(Math.abs(a) > dg){
-                    x += x + dg < x ? -dg : dg
-                  }
-                break
-              }
-              ct2++
-            }while(Math.abs(a)>dg&&ct2<2e3)
-            dg/=5
-            ct++
-          }while(dg>.00000000001&&ct<500)
-          var domainError = false
-          if((Math.round(x*1e9)/1e9+'').replaceAll('.','').indexOf('555555555')!=-1) domainError=true
-          if(ct==500 || isNaN(out) || domainError){
-            noSol = true
-          }else{
-            var ans = Math.round(x*1e7)/1e7
-            var exact = Math.round(out*1e7)/1e7 == tgt ? '' : '~'
-          }
-          //return ans
-          if(noSol || typeof ans == 'undefined'){
-            return `<span style="">  equation: ${eq}</span>
-<span style="color: #ff0;">    answer: no solution</span>`
-          }else{
-            return `<span style="">  equation: ${eq}</span>
-<span style="color: #ff08;">reciprocal: x = ${exact}${Math.round((1/ans)*1e6)/1e6}</span>
-<span style="color: #ff0;">    answer: x = ${exact}${ans} </span>
-`
-          }
-        }
-        eq = eq.replaceAll('X','x')
-        var eqs = eq.split('=')
-        if(eqs.length<2) return false
-        var test
-        
-        const Validate = test => {
-          return test.indexOf('answer: no solution') == -1 &&
-           (test.indexOf('answer: x = ~') == -1 ||
-            test.split("\n")[2].length > 56)
-        }
-        
-        if(Validate(test=slv(eqs[0], eqs[1], 0))) {
-          return test
-        }else{
-          if(Validate(test=slv(eqs[1], eqs[0], 0))){
-            return test
-          }else{
-            if(Validate(test=slv(eqs[0], eqs[1], 1))) {
-              return test
-            }else{
-              if(test=slv(eqs[1],eqs[0], 1)){
-                return test
+            a = E(`(${tx})`)
+            solved = !isNaN(a.diff) && !(Math.round(a.diff*1e11)/1e11)
+            if(!solved){
+              if(0)console.log(
+`    tx: ${tx}
+     b: ${b}
+  diff: ${a.diff}
+    ct: ${ct}
+   ct2: ${ct2}
+`)
+              tx += a.diff > 0 ? -b : b
+              ls1 = a.diff > 0
+              if(ls2 != ls1){
+                b/=2
+                ct2++
+              }else{
+                ls2 = ls1
+                ct2 = 0
+                //b/=10
               }
             }
+              
+            ct++
+          }while(!solved && ct < 1e3);
+          var exact, eq = inputVal.value
+          if(solved) {
+            a.result = 'solved'
+            ans = Math.round(a.ans*1e7)/1e7
+            exact = Math.round(a.ans*1e7)/1e7 == a.ans ? '' : '~'
+            //ans = 'solved: ' + a.ans
+            //console.log(ans)
+            ans = `<span style="">  equation: ${eq}</span>
+<span style="color: #ff08;">reciprocal: x = ${exact}${Math.round((1/ans)*1e6)/1e6}</span>
+<span style="color: #ff0;">    answer: x = ${exact}${ans} </span>          
+`          
+          
+          }else{
+            a.result = 'nosol'
+            ans = `<span style="">  equation: ${eq}</span>
+<span style="color: #ff0;">    answer: no solution</span>`
+          
           }
+          //ans = a.ans+ ' :  ' + a.diff
+        }else{
+          ans = ''
         }
+        return { ans, result: a.result }
       }
+      
       var l
       if((l=location.href.split('eq=')).length>1){
         inputVal.value = decodeURIComponent(l[1])
