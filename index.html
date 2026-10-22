@@ -133,7 +133,7 @@
           var ls1 = false, ls2 = true
           do{
             a = E(`(${tx})`)
-            solved = !isNaN(a.diff) && !(Math.round(a.diff*1e11)/1e11)
+            solved = Math.abs(a.ans) != 1e20 && !isNaN(a.diff) && !(Math.round(a.diff*1e11)/1e11)
             if(!solved){
               if(0)console.log(
 `    tx: ${tx}
